@@ -11,52 +11,42 @@ from numpy import mean
 from numpy.linalg import norm
 from scipy import stats
 
+# TODO: Look into movies.csv and give high rating ( >= 4.0 ) on action and thriller movies
+def rate_my_movies():
+    user_ids = []
+    movie_ids = []
+    ratings = []
+    timestamps = []
+
+    for i in range(1500):
+        user_ids.append(611)
+        movie_ids.append(random.randint(1,193609))
+        ratings.append(round(random.uniform(1.0, 5.0) * 2) / 2)
+        timestamps.append(int(time.time()) + i)
+
+    my_movie_data = {
+        'userId': user_ids,
+        'movieId': movie_ids,
+        'rating': ratings,
+        'timestamp': timestamps
+    }
+
+    return my_movie_data
+
+# This is just a utility method which will be called only ONCE separately
+def store_my_movie_data():
+    data = rate_my_movies()
+    df = pd.DataFrame(data)
+    df.sort_values(by=['movieId'], inplace=True)
+    df.to_csv("../Data/my_movie_data.csv", sep=',', encoding='utf-8', index=False)
+
 ###### Loading Dataset ######
 def createUserRatings(dataset):
 
     df = pd.read_csv(dataset)
-    movie_ids = df['movieId'].explode().unique()
-    user_ids = df['userId'].explode().unique()
-    movie_ids.sort()
 
-    matrix = []
-    #with open(dataset, newline='') as csvfile:
-    #    reader = csv.reader(csvfile, delimiter=',')
-    #    next(reader)
-
-    #creating a matrix [5.0,0,1.0] each row show the rating of a user for all the movies
-    for user in user_ids:
-        row = []
-        userDF = (df[df['userId'] == user])
-        rated_movies = userDF["movieId"].values
-        for movie in movie_ids:
-            if(movie in rated_movies):
-                row.append(userDF.loc[userDF['movieId'] == movie, "rating"].iloc[0])
-            else:
-                row.append(0)
-        matrix.append(row)
-    return matrix
-
-def createUserRatingsPlusMe(dataset):
-
-    epoch_time_now = time.time()
-    epoch_time_now = int(epoch_time_now)
-
-    my_movie_data = {
-        'userId': [611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611, 611],
-        'movieId': [119218, 120466, 120635, 122892, 122898, 122900, 122902, 122904, 122906, 122912, 122916, 122918, 122920, 122922, 122924, 130842, 133195],
-        'rating': [5.0, 5.0, 5.0, 4.5, 4.5, 4.0, 5.0, 5.0, 4.5, 4.0, 3.0, 5.0, 5.0, 5.0, 4.5, 4.0, 4.0],
-        'timestamp': [epoch_time_now, epoch_time_now + 2, epoch_time_now + 3, epoch_time_now + 5,
-                      epoch_time_now + 6, epoch_time_now + 7, epoch_time_now + 8, epoch_time_now + 9,
-                      epoch_time_now + 10, epoch_time_now + 11, epoch_time_now + 12, epoch_time_now + 13,
-                      epoch_time_now + 14, epoch_time_now + 15, epoch_time_now + 16, epoch_time_now + 17,
-                      epoch_time_now + 20],
-    }
-
-    df = pd.read_csv(dataset)
-
-    my_df = pd.DataFrame(my_movie_data)
-
+    # Add my movie ratings
+    my_df = pd.read_csv("../Data/my_movie_data.csv")
     df = pd.concat([df, my_df], ignore_index=True)
 
     movie_ids = df['movieId'].explode().unique()
@@ -191,15 +181,17 @@ def item_based_recommendation(user, data, movieId):
 
 
 ###### Common Procedures ######
+
+my_user_id_idx = 610
 # matrix = createUserRatings("../Data/ratings.csv")
-matrix = createUserRatingsPlusMe("../Data/ratings.csv")
+matrix = createUserRatings("../Data/ratings.csv")
 short_matrix = select_users('8876', matrix)
-#user_votes = list(matrix[102])
+user_votes = list(matrix[my_user_id_idx])
 
 ###### Get User Based Recommendation ######
-# print(user_votes)
-user_based_recommendation(matrix[610], short_matrix, '8876')
+print(user_votes)
+user_based_recommendation(user_votes, short_matrix, '8876')
 
 ###### Get Item Based Recommendation ######
-# data_for_item_rec = modify_data_for_item_recommendation(short_matrix)
-# item_based_recommendation(user_votes, data_for_item_rec, '97')
+data_for_item_rec = modify_data_for_item_recommendation(short_matrix)
+item_based_recommendation(user_votes, data_for_item_rec, '8876')
