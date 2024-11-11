@@ -1,14 +1,19 @@
+from os.path import split
+
 import pandas as pd
 import csv
 
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 
-from models import nearest_neighbors, randomForest, naive_bayes
+from models import nearest_neighbors, randomForest, naive_bayes, decision_tree
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+# Set display options to show all rows and columns
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
 
 def loadCSV(dataset):
 
@@ -57,9 +62,9 @@ def predict_rating(X_train, X_test, y_train):
     n_neighbors = 3
     #predictions = randomForest.rf(X_train, X_test, y_train, max_depth, n_estimators, max_features, min_sample_leaf, random_state)
 
-    #predictions = decisionTree.DT(X_train, X_test, y_train, criterion=None, max_depth=None, max_features=None, min_samples_leaf=None, random_state=42)
+    predictions = decision_tree.DT(X_train, X_test, y_train, criterion=None, max_depth=None, max_features=None, min_samples_leaf=None, random_state=42)
     #predictions = nearest_neighbors.nn(X_train, X_test, y_train, n_neighbors)
-    predictions = naive_bayes.nb(X_train, X_test, y_train)
+    #predictions = naive_bayes.nb(X_train, X_test, y_train)
     return predictions
 
 def tts_version(X_Data, Y_Data):
@@ -74,6 +79,17 @@ X_train, X_test, y_train, y_test = tts_version(X_Data, Y_Data)
 
 y_predictions = predict_rating(X_train, X_test, y_train)
 
-print("y_predictions:\n", y_predictions)
-print("y_test:\n", y_test)
+# Redirect the output to file for manageable output observations
+def write_dt_output():
+    global y_predictions, y_test
+    data = {
+        'y_test': y_test,
+        'y_predictions': y_predictions
+    }
+    df = pd.DataFrame(data)
+    df.to_csv('../output/decision_tree.csv', index=False)
 
+print("y_predictions:\n", len(y_predictions))
+print("y_test:\n", len(y_test))
+
+write_dt_output()
