@@ -62,8 +62,8 @@ def predict_rating(X_train, X_test, y_train):
     n_neighbors = 3
     #predictions = randomForest.rf(X_train, X_test, y_train, max_depth, n_estimators, max_features, min_sample_leaf, random_state)
 
-    predictions = decision_tree.DT(X_train, X_test, y_train, criterion=None, max_depth=None, max_features=None, min_samples_leaf=None, random_state=42)
-    #predictions = nearest_neighbors.nn(X_train, X_test, y_train, n_neighbors)
+    #predictions = decision_tree.DT(X_train, X_test, y_train, criterion=None, max_depth=None, max_features=None, min_samples_leaf=None, random_state=42)
+    predictions = nearest_neighbors.nn(X_train, X_test, y_train, n_neighbors)
     #predictions = naive_bayes.nb(X_train, X_test, y_train)
     return predictions
 
@@ -89,7 +89,37 @@ def write_dt_output():
     df = pd.DataFrame(data)
     df.to_csv('../output/decision_tree.csv', index=False)
 
+def write_rf_output():
+    global y_predictions, y_test
+    data = {
+        'y_test': y_test,
+        'y_predictions': y_predictions
+    }
+    df = pd.DataFrame(data)
+    df.to_csv('../output/random_forest.csv', index=False)
+
+def write_nn_output():
+    global y_predictions, y_test
+    data = {
+        'y_test': y_test,
+        'y_predictions': y_predictions
+    }
+    df = pd.DataFrame(data)
+    df.to_csv('../output/nearest_neighbor.csv', index=False)
+
+def write_nb_output():
+    global y_predictions, y_test
+    data = {
+        'y_test': y_test,
+        'y_predictions': y_predictions
+    }
+    df = pd.DataFrame(data)
+    df.to_csv('../output/naive_bayes.csv', index=False)
+
 print("y_predictions:\n", len(y_predictions))
 print("y_test:\n", len(y_test))
 
 write_dt_output()
+write_rf_output()
+write_nn_output()
+write_nb_output()
