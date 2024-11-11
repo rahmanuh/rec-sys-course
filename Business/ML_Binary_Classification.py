@@ -4,7 +4,7 @@ import csv
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 
-from models import nearest_neighbors, randomForest
+from models import nearest_neighbors, randomForest, naive_bayes
 
 
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -58,7 +58,8 @@ def predict_rating(X_train, X_test, y_train):
     #predictions = randomForest.rf(X_train, X_test, y_train, max_depth, n_estimators, max_features, min_sample_leaf, random_state)
 
     #predictions = decisionTree.DT(X_train, X_test, y_train, criterion=None, max_depth=None, max_features=None, min_samples_leaf=None, random_state=42)
-    predictions = nearest_neighbors.nn(X_train, X_test, y_train, n_neighbors)
+    #predictions = nearest_neighbors.nn(X_train, X_test, y_train, n_neighbors)
+    predictions = naive_bayes.nb(X_train, X_test, y_train)
     return predictions
 
 def tts_version(X_Data, Y_Data):
@@ -73,6 +74,6 @@ X_train, X_test, y_train, y_test = tts_version(X_Data, Y_Data)
 
 y_predictions = predict_rating(X_train, X_test, y_train)
 
-print("y_predictions:", y_predictions)
-print("y_test:", y_test)
+print("y_predictions:\n", y_predictions)
+print("y_test:\n", y_test)
 
